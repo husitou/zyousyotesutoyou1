@@ -501,7 +501,12 @@
 
     function handleTypingSubmit(e) {
       if (e) e.preventDefault();
-      if (typingAnswered) return nextTypingQuestion();
+      
+      // 既に回答済みならEnterキーで次の問題へ進む
+      if (typingAnswered) {
+        nextTypingQuestion();
+        return;
+      }
 
       const input = document.getElementById('typing-input');
       const userVal = input.value;
@@ -711,11 +716,18 @@
       renderQuestionList();
     }
 
+    // 全般のキーボードショートカット制御
     document.addEventListener('keydown', function(e) {
       if (currentMode === 'flashcard') {
         if (e.code === 'Space') { e.preventDefault(); flipCard(); }
         else if (e.code === 'ArrowRight') nextCard();
         else if (e.code === 'ArrowLeft') prevCard();
+      } else if (currentMode === 'typing') {
+        // タイピングモード時、回答入力後（inputが無効化されている状態など）でEnterキーが押された場合のサポート
+        if (e.key === 'Enter' && typingAnswered) {
+          e.preventDefault();
+          nextTypingQuestion();
+        }
       }
     });
 
